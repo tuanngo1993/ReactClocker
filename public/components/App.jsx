@@ -1,47 +1,45 @@
 var React = require('react');
 
-var App = React.createClass({
-	getInitialState: function() {
-		return {
-			h: "00",
-			m: "00",
-			s: "00",
-			apm: ""
+class App extends React.Component {
+	constructor(props) {
+		super(props);
+
+		const currentTime = new Date();
+		this.state = {
+			h : currentTime.getHours(),
+			m : currentTime.getMinutes(),
+			s : currentTime.getSeconds(),
+			apm: currentTime.getHours() >= 12 ? 'pm' : 'am'
 		};
-	},
 
-	setTime: function() {
-		const currentTime = new Date(),
-		h = currentTime.getHours(),
-		m = currentTime.getMinutes(),
-		s = currentTime.getSeconds();
+		this.setTimer();
+	}
 
+	setTimer() {
+		setTimeout(this.updateClock.bind(this), 1000);
+	}
+
+	updateClock() {
+		const currentTime = new Date();
 		this.setState({
-			h: h == 0 ? 12 : (h > 12 ? h - 12 : h),
-			m: m > 9 ? m : '0' + m,
-			s: s > 9 ? s : '0' + s,
-			apm: h > 12 ? 'pm' : 'am'
-		});
-	},
+			h : currentTime.getHours(),
+			m : currentTime.getMinutes(),
+			s : currentTime.getSeconds(),
+			apm: currentTime.getHours() >= 12 ? 'pm' : 'am'
+		}, this.setTimer);
+	}
 
-	componentWillMount: function() {
-		this.setTime();
-	},
-
-	componentDidMount: function(){
-		window.setInterval(function () {
-			this.setTime();
-		}.bind(this), 1000);
-	},
-
-	render: function() {
+	render() {
+		const {h, m, s, apm} = this.state;
 		return (
 			<div>
-				{this.state.h} : {this.state.m} : {this.state.s} {' ' + this.state.apm}
+				{h == 0 ? 12 : (h > 12 ? h - 12 : h)}
+					: {m > 9 ? m : '0' + m}
+						: {s > 9 ? s : '0' + s}
+							{' ' + apm}
 			</div>
 		);
 	}
-});
-
+}
 
 module.exports = App;
